@@ -26,7 +26,14 @@ class Contacts extends ConsumerWidget {
   // the user can try again. If it does match, however, authService is called and passes inputs to
   // the signUpWithEmailandPassword function. If everything is fine, the user proceeds to the contacts
   // screen. Else, an error is displayed as a string in a SnackBar.
-  void signUp(BuildContext context, WidgetRef ref, TextEditingController emailController, TextEditingController passwordController, TextEditingController cpasswordController) async {
+  void signUp(
+      BuildContext context, 
+      WidgetRef ref, 
+      TextEditingController emailController, 
+      TextEditingController passwordController, 
+      TextEditingController cpasswordController, 
+      TextEditingController fnameController, 
+      TextEditingController lnameController) async {
     if (passwordController.text != cpasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Passwords do not match")),
@@ -41,10 +48,15 @@ class Contacts extends ConsumerWidget {
         emailController.text,
         passwordController.text,
       );
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Account created! Welcome to the chat app!"))
+      // add fname and lname
+      authService.addUserDetails(
+        fnameController.text.trim(),
+        lnameController.text.trim(),
+        emailController.text.trim(),
       );
+      ScaffoldMessenger.of(context).showSnackBar(
+         SnackBar(content: Text("Account created! Welcome to the chat app, ${fnameController.text.trim()}!",
+      )));
       Navigator.pop(context); // Go back to login screen
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -52,6 +64,8 @@ class Contacts extends ConsumerWidget {
       );
     }
   }
+
+  
 
 
 
@@ -166,6 +180,8 @@ class Contacts extends ConsumerWidget {
                       emailController,
                       passwordController,
                       cpasswordController,
+                      fnameController,
+                      lnameController,
                     ),
                     child: const Text('Register'), 
                   ),

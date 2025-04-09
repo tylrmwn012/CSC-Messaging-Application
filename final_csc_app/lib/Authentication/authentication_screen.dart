@@ -15,7 +15,6 @@ class LogIn extends ConsumerStatefulWidget {
 }
 
 
-
 class _LogInState extends ConsumerState<LogIn> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
