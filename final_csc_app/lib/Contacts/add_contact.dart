@@ -1,4 +1,4 @@
-import 'package:final_csc_app/Read%20Data/get_user_name.dart';
+import 'package:final_csc_app/Read%20Data/add_contact_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -24,12 +24,14 @@ class _AddContact extends ConsumerState<AddContact> {
 
   // get list of other users for user search
   List<String> docIDs = [];
+  List<String> filteredUsers = [];  // duplicate list to be altered 
 
   Future getDocID() async {
     await FirebaseFirestore.instance.collection('users').get().then(
       (snapshot) => snapshot.docs.forEach((document) {
         print(document.reference);
         docIDs.add(document.reference.id);
+        filteredUsers.add(document.reference.id); // duplicate list to be altered
       }),
     );
   }
@@ -60,9 +62,8 @@ class _AddContact extends ConsumerState<AddContact> {
             spacing: 1,
             children: [
 
-
-              const SizedBox(height: 80),
-              // Chat view
+              const SizedBox(height: 100),
+              // List of every user
               Expanded(
                 child: FutureBuilder(
                   future: getDocID(),
@@ -91,7 +92,6 @@ class _AddContact extends ConsumerState<AddContact> {
 
 
               Row(
-
                 // First Name
                 children: [
                   Flexible(
@@ -145,7 +145,8 @@ class _AddContact extends ConsumerState<AddContact> {
                   width: 250,
                   child: ElevatedButton(
                     onPressed: () {
-
+                      /*  LOGIC AT BOTTOM OF SCREEN */
+                      // onPressed = call function to filter list...
                     },
                     child: const Text('Search'), 
                   ),
@@ -160,7 +161,35 @@ class _AddContact extends ConsumerState<AddContact> {
 }
 
 
+/* 
 
+
+function that filters the users in the list {
+
+    for i in docIDs :
+
+        if fnameController == something :
+            if (first name != fnameController):
+                remove the user from the secondDocIDs
+
+        
+        if lnameController == something :
+            if (last name != lnameController):
+               remove the user from the secondDocIDs
+        
+        
+        if emailController == something :
+            if (email != emailController):
+                remove the user from the secondDocIDs
+}
+
+    - we should keep the old list in case they make another search
+        for example, they clear their parameters and hit search.
+        it should display the full list again...
+
+
+
+*/
 
 
 

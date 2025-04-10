@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'register_screen.dart' as register;
 import '../Firebase/auth_provider.dart';
+import 'forgot_password.dart';
 
 // This screen is where the user either logs in with an email and password. 
 // Or they can move on to the register screen and register with an email and password,
@@ -89,7 +90,20 @@ class _LogInState extends ConsumerState<LogIn> {
                 style: const TextStyle(color: Colors.white),
                 controller: passwordController,
               ),
-              const SizedBox(height: 16),
+
+// INSERT FORGOT PASSWORD BUTTON
+              TextButton(onPressed: () {
+                Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ForgotPassword(),
+                      ),
+                    );
+              }, 
+                child: Text("Forgot Password?", style: TextStyle(color: Colors.white),),),
+
+
+
               SizedBox(
                 width: 250,
                 child: ElevatedButton(
