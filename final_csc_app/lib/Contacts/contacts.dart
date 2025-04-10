@@ -20,6 +20,39 @@ class Contacts extends ConsumerWidget {
     final authService = ref.read(authServiceProvider);
 
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0.0,
+        leading: PopupMenuButton<String>(
+          padding: EdgeInsets.zero,
+          icon: Icon(Icons.menu, size: 32, color: Colors.white), // bigger icon
+          onSelected: (String choice) {
+            switch (choice) {
+              case 'Logout':
+                authService.signOut();
+                break;
+              case 'Add Contact':
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => add_contact.AddContact(),
+                  ),
+                );
+                break;
+            }
+          },
+          itemBuilder: (BuildContext context) {
+            return {'Logout', 'Add Contact'}.map((String choice) {
+              return PopupMenuItem<String>(
+                value: choice,
+                child: Text(choice),
+              );
+            }).toList();
+          },
+        ),
+      ),
+
+      extendBodyBehindAppBar: true,
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -32,40 +65,7 @@ class Contacts extends ConsumerWidget {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              const SizedBox(height: 50),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Flexible(
-                    child: SizedBox(
-                      width: 150,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          authService.signOut(); // authService signOut function called here; returns user to authentication screen
-                        },
-                        child: const Text('Sign Out'),
-                      ),
-                    ),
-                  ),
-                  Flexible(
-                    child: SizedBox(
-                      width: 150,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => add_contact.AddContact(),
-                            ),
-                          );
-                        },
-                        child: const Text('Add Contact'),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 110), // pushed down to make space for AppBar
               SizedBox(
                 height: 100.0,
                 width: 500,
@@ -85,9 +85,7 @@ class Contacts extends ConsumerWidget {
                 child: ListView(
                   reverse: true,
                   padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 7),
-                  // To-do: render contacts dynamically here
-                  // The main section is the contacts list. This will display a list of buttons that will take
-                  // the user to previous conversation with said contact.
+                  // Contacts list goes here
                 ),
               ),
             ],
