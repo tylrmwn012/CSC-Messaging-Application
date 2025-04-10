@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'register_screen.dart' as register;
-import '../Firebase/auth_providers.dart';
+import '../Firebase/auth_provider.dart';
 
 // This screen is where the user either logs in with an email and password. 
 // Or they can move on to the register screen and register with an email and password,
@@ -24,7 +24,6 @@ class _LogInState extends ConsumerState<LogIn> {
   // as a SnackBar.
   void signIn() async {
     final authService = ref.read(authServiceProvider);
-
     try {
       await authService.signInWithEmailandPassword(
         emailController.text,
@@ -77,6 +76,7 @@ class _LogInState extends ConsumerState<LogIn> {
                 style: const TextStyle(color: Colors.white),
                 controller: emailController,
               ),
+              
               TextField(
                 obscureText: true,
                 decoration: const InputDecoration(

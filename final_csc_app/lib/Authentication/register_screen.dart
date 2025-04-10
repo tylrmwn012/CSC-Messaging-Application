@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart'; 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../Firebase/auth_providers.dart';
+import '../Firebase/auth_provider.dart';
 
 // This screen will allow the user to register an account with the application.
 // It asks for an email address, password, first name and last name.
@@ -10,16 +10,11 @@ import '../Firebase/auth_providers.dart';
 
 class Contacts extends ConsumerWidget {
   Contacts({super.key});
-  // user entered fname
-  final fnameController = TextEditingController();
-  // user entered lname
-  final lnameController = TextEditingController();
-  // user entered email
-  final emailController = TextEditingController();
-  // user entered password
-  final passwordController = TextEditingController();
-  // user entered cpassword
-  final cpasswordController = TextEditingController();
+  final fnameController = TextEditingController(); // user entered first name
+  final lnameController = TextEditingController(); // user entered last name
+  final emailController = TextEditingController(); // user entered email
+  final passwordController = TextEditingController(); // user entered password
+  final cpasswordController = TextEditingController(); // user entered confirm password
 
   // Sign up function which takes user input of email and password (for now). 
   // If the password does not match the confrimation password, the error is displayed and 
@@ -34,21 +29,20 @@ class Contacts extends ConsumerWidget {
       TextEditingController cpasswordController, 
       TextEditingController fnameController, 
       TextEditingController lnameController) async {
+
+    final authService = ref.read(authServiceProvider);
     if (passwordController.text != cpasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Passwords do not match")),
       );
       return;
     }
-
-    final authService = ref.read(authServiceProvider);
-
     try {
       await authService.signUpWithEmailandPassword(
         emailController.text,
         passwordController.text,
       );
-      // add fname and lname
+      // add first name and last name to firebase
       authService.addUserDetails(
         fnameController.text.trim(),
         lnameController.text.trim(),
@@ -65,14 +59,13 @@ class Contacts extends ConsumerWidget {
     }
   }
 
-  
-
-
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(  
       appBar: AppBar(
+        leading: const BackButton(
+          color: Colors.white,
+        ),  
         backgroundColor: Colors.transparent,
         elevation: 0.0,        
       ),
@@ -156,7 +149,7 @@ class Contacts extends ConsumerWidget {
                 style: const TextStyle(color: Colors.white),
               ),
 
-              // Password
+              // Confirm Password
               TextField(
                 obscureText: true,
                 controller: cpasswordController,

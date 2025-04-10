@@ -28,7 +28,6 @@ class AuthService extends ChangeNotifier{
   // function defined in order to register a new user to the application
   Future<UserCredential> signUpWithEmailandPassword(String email, password) async {
     try {
-      
       UserCredential userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
         email: email, 
         password: password
@@ -40,7 +39,7 @@ class AuthService extends ChangeNotifier{
     }
   }
 
-  // add first name and last name
+  // function which adds string first name, last name, and email to firebase
   Future addUserDetails(String firstName, String lastName, String email) async {
     await FirebaseFirestore.instance.collection('users').add({
       'first name': firstName,
@@ -48,5 +47,4 @@ class AuthService extends ChangeNotifier{
       'email': email,
     });
   }
-
 }

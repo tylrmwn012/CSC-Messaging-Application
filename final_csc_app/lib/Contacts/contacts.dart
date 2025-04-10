@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'add_contact.dart' as add_contact;
 import '../Chats/chat_screen.dart' as chat_screen;
-import '../Firebase/auth_providers.dart';
+import '../Firebase/auth_provider.dart';
 
 // This screen will serve as sort of the home page of the whole app. At the top left, 
 // the user can sign out and be returned to the authentication screen. At the top right, 

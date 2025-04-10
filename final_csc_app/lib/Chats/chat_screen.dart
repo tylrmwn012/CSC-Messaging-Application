@@ -13,8 +13,13 @@ class ChatScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        elevation: 0.0,        
-        title: const Text('My Mentor'),
+        elevation: 0.0, 
+        leading: const BackButton(
+          color: Colors.white,
+        ),   
+        title: const Text('My Mentor',
+            style: TextStyle(color: Colors.white,),
+        ),
       ),
       extendBodyBehindAppBar: true,
       body: Container(
@@ -59,7 +64,7 @@ class ChatScreen extends StatelessWidget {
 
                   ),
                   const SizedBox(width: 10),
-                  FilledButton(
+                  ElevatedButton(
                     onPressed: () {},
                     child: const Icon(Icons.send),
                   ),
