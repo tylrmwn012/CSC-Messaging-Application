@@ -15,26 +15,48 @@ class AddContact extends ConsumerStatefulWidget {
 }
 
 class _AddContact extends ConsumerState<AddContact> {
-  // First name user input
   final fnameController = TextEditingController();
-  // Last name user input
   final lnameController = TextEditingController();
-  // Email user input
-  final emailController = TextEditingController();
 
   // get list of other users for user search
   List<String> docIDs = [];
   List<String> filteredUsers = [];  // duplicate list to be altered 
 
   Future getDocID() async {
+    docIDs.clear();
     await FirebaseFirestore.instance.collection('users').get().then(
       (snapshot) => snapshot.docs.forEach((document) {
         print(document.reference);
         docIDs.add(document.reference.id);
-        filteredUsers.add(document.reference.id); // duplicate list to be altered
       }),
     );
   }
+
+  Future filterUsers() async {
+    filteredUsers.clear(); // clears the list completely
+
+    final fname = fnameController.text.trim().toLowerCase(); // fname is the input first name all lowercase
+    final lname = lnameController.text.trim().toLowerCase();
+
+    for (var docId in docIDs) { // for every element in docIDs
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(docId).get(); // get their data
+      Map<String, dynamic> data = userDoc.data() as Map<String, dynamic>; 
+
+      final userFname = (data['first name']).toString().toLowerCase(); 
+      final userLname = (data['last name']).toString().toLowerCase();
+
+      final fnameMatch = fname.isEmpty || userFname == fname;
+      final lnameMatch = lname.isEmpty || userLname == lname;
+
+      // Only add if at least one field matches
+      if (fnameMatch && lnameMatch) {
+        filteredUsers.add(docId);
+      }
+    }
+
+    setState(() {});
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -61,32 +83,36 @@ class _AddContact extends ConsumerState<AddContact> {
             mainAxisAlignment: MainAxisAlignment.center,
             spacing: 1,
             children: [
-
               const SizedBox(height: 100),
               // List of every user
               Expanded(
-                child: FutureBuilder(
-                  future: getDocID(),
-                  builder: (context, snapshot) {
-                    return ListView.builder(
-                      reverse: true,
-                      itemCount: docIDs.length,
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.all(8),
-                          child: SizedBox(
-                          height: 100,
-                          child: ElevatedButton(
-                              child: GetUserName(documentId: docIDs[index]),
-                              onPressed: () {
-                                // ADD CONTACT TO CONTACTS PAGE
-                              },
-                            ),
-                          ),
-                        );
-                      }
+                child: ListView.builder(
+                  reverse: true,
+                  itemCount: filteredUsers.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: SizedBox(
+                        height: 100,
+                        child: ElevatedButton(
+                          child: GetUserName(documentId: filteredUsers[index]),
+                          onPressed: () {
+                            // Here we want to take the information of the button clicked
+                            // Then add a button to the other screen with that person they clicked on
+                            // This involves data handling with firebase:
+                                // Create a database and store a user's contacts in it
+                                // Then on the other screen, we display all of the person's contacts from that database
+
+                            // Add infromation FROM button TO user's contacts list
+                            // 1) initialize a collection in firestore
+                            // 2) add contact to that collection
+                            // 3) display all contacts on the screen
+
+                          },
+                        ),
+                      ),
                     );
-                  }
+                  },
                 ),
               ),
 
@@ -128,30 +154,19 @@ class _AddContact extends ConsumerState<AddContact> {
                 ]
               ),
 
-              TextField(
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  labelStyle: TextStyle(color: Colors.white),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white70),
-                  ),
-                ),
-                style: const TextStyle(color: Colors.white),
-                controller: emailController,
-              ),
 
               // Search for user...
               SizedBox(
                   width: 250,
                   child: ElevatedButton(
-                    onPressed: () {
-                      /*  LOGIC AT BOTTOM OF SCREEN */
-                      // onPressed = call function to filter list...
+                    onPressed: () async {
+                      await getDocID();
+                      await filterUsers();
+                      print(filteredUsers);
                     },
                     child: const Text('Search'), 
                   ),
                 ),
-
             ],
           ),
         ),
@@ -159,37 +174,6 @@ class _AddContact extends ConsumerState<AddContact> {
     );
   }
 }
-
-
-/* 
-
-
-function that filters the users in the list {
-
-    for i in docIDs :
-
-        if fnameController == something :
-            if (first name != fnameController):
-                remove the user from the secondDocIDs
-
-        
-        if lnameController == something :
-            if (last name != lnameController):
-               remove the user from the secondDocIDs
-        
-        
-        if emailController == something :
-            if (email != emailController):
-                remove the user from the secondDocIDs
-}
-
-    - we should keep the old list in case they make another search
-        for example, they clear their parameters and hit search.
-        it should display the full list again...
-
-
-
-*/
 
 
 

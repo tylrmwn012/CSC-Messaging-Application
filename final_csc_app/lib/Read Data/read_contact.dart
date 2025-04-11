@@ -1,13 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class GetUserName extends StatelessWidget {
+class GetContacts extends StatelessWidget {
   final String documentId;
-  GetUserName({required this.documentId});
+  GetContacts({required this.documentId});
 
   @override
   Widget build(BuildContext context) {
-    CollectionReference users = FirebaseFirestore.instance.collection('users');
+    CollectionReference users = FirebaseFirestore.instance.collection('contacts');
     
     return FutureBuilder<DocumentSnapshot>(
       future: users.doc(documentId).get(),
@@ -15,7 +15,7 @@ class GetUserName extends StatelessWidget {
       if (snapshot.connectionState == ConnectionState.done) {
         Map<String, dynamic> data = 
             snapshot.data!.data() as Map<String, dynamic>;
-        return Text('${data['first name']} ${data['last name']}\n${data['email']}');
+        return Text('${data['first name']} ${data['last name']}', style: TextStyle(fontSize: 16),);
       } 
       return Text('loading...');
       })

@@ -15,7 +15,6 @@ class LogIn extends ConsumerStatefulWidget {
   ConsumerState<LogIn> createState() => _LogInState();
 }
 
-
 class _LogInState extends ConsumerState<LogIn> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
@@ -35,8 +34,6 @@ class _LogInState extends ConsumerState<LogIn> {
           .showSnackBar(SnackBar(content: Text(e.toString())));
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {
