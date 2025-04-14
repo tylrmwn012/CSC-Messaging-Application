@@ -1,8 +1,7 @@
-import 'package:final_csc_app/Read%20Data/read_contact.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'add_contact.dart' as add_contact;
-import '../Chats/chat_screen.dart' as chat_screen;
+import '../Chats/chat_screen.dart';
 import '../Firebase/auth_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -21,30 +20,31 @@ class Contacts extends ConsumerStatefulWidget {
 }
 
 class _Contacts extends ConsumerState<Contacts> {
-  List<String> contacts = [];
+  List<Map<String, dynamic>> contacts = [];
 
-  // this will be a function that GETS the contacts from firebase
-  Future getContacts() async {
-      contacts.clear();
-      await FirebaseFirestore.instance.collection('contacts').get().then(
-        (snapshot) => snapshot.docs.forEach((document) {
-          print(document.reference);
-          contacts.add(document.reference.id);
-        }),
-      );
+  Future<void> getContacts() async {
+    contacts.clear();
+    QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('users').get();
+    
+    for (var doc in snapshot.docs) {
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+      data['uid'] = doc.id; // Store the document ID as UID if needed
+      contacts.add(data);
     }
+  }
 
   @override
   Widget build(BuildContext context) {
     final authService = ref.read(authServiceProvider);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0.0,
-        title: Text('Contacts', style: TextStyle(color: Colors.white, fontSize: 22,),),
+        title: Text('Contacts', style: TextStyle(color: Colors.white, fontSize: 22)),
         leading: PopupMenuButton<String>(
           padding: EdgeInsets.zero,
-          icon: Icon(Icons.menu, size: 32, color: Colors.white), // bigger icon
+          icon: Icon(Icons.menu, size: 32, color: Colors.white),
           onSelected: (String choice) {
             switch (choice) {
               case 'Logout':
@@ -83,39 +83,43 @@ class _Contacts extends ConsumerState<Contacts> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-
-              // Contacts list goes here
               Expanded(
                 child: FutureBuilder(
                   future: getContacts(),
                   builder: (context, snapshot) {
+                    if (snapshot.connectionState != ConnectionState.done) {
+                      return Center(child: CircularProgressIndicator());
+                    }
                     return ListView.builder(
-                      reverse: false,
                       itemCount: contacts.length,
                       itemBuilder: (context, index) {
+                        final contact = contacts[index];
                         return Padding(
                           padding: const EdgeInsets.all(8),
                           child: SizedBox(
-                          height: 100,
-                          child: ElevatedButton(
-                              child: GetContacts(documentId: contacts[index]),
+                            height: 100,
+                            child: ElevatedButton(
+                              child: Text("${contact['first name']} ${contact['last name'] ?? ''}"),
                               onPressed: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => chat_screen.ChatScreen(),
+                                    builder: (context) => ChatScreen(
+                                      receiverUserName: contact['first name'],
+                                      receiverUserID: contact['uid'],
+                                    ),
                                   ),
                                 );
                               },
                             ),
                           ),
                         );
-                      }
+                      },
                     );
-                  }
+                  },
                 ),
               ),
-            ]
+            ],
           ),
         ),
       ),
