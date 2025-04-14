@@ -41,13 +41,10 @@ class Contacts extends ConsumerWidget {
       await authService.signUpWithEmailandPassword(
         emailController.text,
         passwordController.text,
-      );
-      // add first name and last name to firebase
-      authService.addUserDetails(
         fnameController.text.trim(),
         lnameController.text.trim(),
-        emailController.text.trim(),
       );
+      // add first name and last name to firebase
       ScaffoldMessenger.of(context).showSnackBar(
          SnackBar(content: Text("Account created! Welcome to the chat app, ${fnameController.text.trim()}!",
       )));
