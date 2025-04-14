@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:final_csc_app/Firebase/chat_service.dart';
+import 'package:final_csc_app/Firebase%20Chat/chat_service.dart';
 // This screen serves as the general chat display. At the top, the user would see 
 // the contact's name. Also, it will display a full history of messages between the
 // two user through as a reverse list.
@@ -90,18 +90,29 @@ class _ChatScreen extends State<ChatScreen> {
   // build message item
   Widget _buildMessageItem(DocumentSnapshot document) {
     Map<String, dynamic> data = document.data() as Map<String, dynamic>;
-
-    var alignment = (data['senderId'] == _firebaseAuth.currentUser!.uid) ? Alignment.centerRight : Alignment.centerLeft;
   
-    return Container(
-      alignment: alignment,
-      child: Column(
-        children: [
-          Text(data['senderEmail'], style: TextStyle(color: Colors.white),),
-          Text(data['message'], style: TextStyle(color: Colors.white),),
-        ]
-      )
-    ); 
+    return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 20),
+      child: Align(
+        alignment: (data['senderId'] == _firebaseAuth.currentUser!.uid) ? Alignment.centerRight : Alignment.centerLeft,
+        child: Container(
+          constraints: const BoxConstraints(minWidth: 100, maxWidth: 300),
+                        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                        margin: const EdgeInsets.symmetric(vertical: 4.0),
+                        decoration: BoxDecoration(
+                          color: (data['senderId'] == _firebaseAuth.currentUser!.uid) ? Colors.green[300] : Colors.blue[300],
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(data['senderEmail'], style: TextStyle(color: Colors.white),),
+              Text(data['message'], style: TextStyle(color: Colors.white),),
+            ]
+        )
+        ),
+      ),
+    );
   }
 
   // build message input

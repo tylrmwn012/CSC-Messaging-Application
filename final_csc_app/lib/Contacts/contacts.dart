@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'add_contact.dart' as add_contact;
 import '../Chats/chat_screen.dart';
-import '../Firebase/auth_provider.dart';
+import '../Firebase Auth/auth_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 // This screen will serve as sort of the home page of the whole app. At the top left, 

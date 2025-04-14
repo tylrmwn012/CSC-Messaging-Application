@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'register_screen.dart' as register;
-import '../Firebase/auth_provider.dart';
+import '../Firebase Auth/auth_provider.dart';
 import 'forgot_password.dart';
 
 // This screen is where the user either logs in with an email and password. 

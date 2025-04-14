@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart'; 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../Firebase/auth_provider.dart';
+import '../Firebase Auth/auth_provider.dart';
 
 // This screen will allow the user to register an account with the application.
 // It asks for an email address, password, first name and last name.
