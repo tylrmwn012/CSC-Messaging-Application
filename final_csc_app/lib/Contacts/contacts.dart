@@ -4,6 +4,7 @@ import 'add_contact.dart' as add_contact;
 import '../Chats/chat_screen.dart';
 import '../Firebase Auth/auth_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../Chats/notifications.dart';
 
 // This screen will serve as sort of the home page of the whole app. At the top left, 
 // the user can sign out and be returned to the authentication screen. At the top right, 
@@ -41,34 +42,7 @@ class _Contacts extends ConsumerState<Contacts> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0.0,
-        title: Text('Contacts', style: TextStyle(color: Colors.white, fontSize: 22)),
-        leading: PopupMenuButton<String>(
-          padding: EdgeInsets.zero,
-          icon: Icon(Icons.menu, size: 32, color: Colors.white),
-          onSelected: (String choice) {
-            switch (choice) {
-              case 'Logout':
-                authService.signOut();
-                break;
-              case 'Add Contact':
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => add_contact.AddContact(),
-                  ),
-                );
-                break;
-            }
-          },
-          itemBuilder: (BuildContext context) {
-            return {'Logout', 'Add Contact'}.map((String choice) {
-              return PopupMenuItem<String>(
-                value: choice,
-                child: Text(choice),
-              );
-            }).toList();
-          },
-        ),
+        title: Text('Contacts', style: TextStyle(color: Colors.white, fontSize: 25)),
       ),
       extendBodyBehindAppBar: true,
       body: Container(
@@ -117,6 +91,74 @@ class _Contacts extends ConsumerState<Contacts> {
                       },
                     );
                   },
+                ),
+              ),
+              SizedBox(
+                height: 70,
+                width: 800,
+                child: Row(
+                  
+                  // This will contain buttons at bottom of screen for :
+                  children: [
+                    // 1) Log Out button
+                    SizedBox(
+                      height: 60,
+                      width: 123,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          authService.signOut();
+                        }, 
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color.fromARGB(0, 255, 255, 255),
+                            elevation: 0.0,
+                            shape: BeveledRectangleBorder(),
+                        ),
+                        child: Icon(Icons.logout_sharp, size: 30, color: Colors.white,),
+                      ),
+                    ),
+                    // 2) Search Contacts button
+                    SizedBox(
+                      height: 60,
+                      width: 123,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => add_contact.AddContact(),
+                            ),
+                          );
+                        }, 
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color.fromARGB(0, 255, 255, 255),
+                            elevation: 0.0,
+                            shape: BeveledRectangleBorder(),
+                        ),
+                        child: Icon(Icons.search_sharp, size: 30, color: Colors.white,),
+                      ),
+                    ),
+                    // 3) Notifications Button
+                    SizedBox(
+                      height: 60,
+                      width: 123,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Notifications(),
+                            ),
+                          );
+                        }, 
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color.fromARGB(0, 255, 255, 255),
+                            elevation: 0.0,
+                            shape: BeveledRectangleBorder(),
+                        ),
+                        child: Icon(Icons.circle_notifications_outlined, size: 30, color: Colors.white,),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
