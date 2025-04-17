@@ -30,6 +30,7 @@ class _LogInState extends ConsumerState<LogIn> {
         passwordController.text,
       );
     } catch (e) {
+      print(e);
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(e.toString())));
     }
@@ -109,7 +110,9 @@ class _LogInState extends ConsumerState<LogIn> {
                 ),
               ),
               const SizedBox(height: 12),
+
               const Text('- OR -', style: TextStyle(color: Colors.white)),
+
               const SizedBox(height: 12),
               SizedBox(
                 width: 250,

@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../Firebase Auth/auth_provider.dart';
 
 // This screen is where the user either logs in with an email and password. 
 // Or they can move on to the register screen and register with an email and password,
 // and a first name and last name.
-class ForgotPassword extends StatefulWidget {
+class ForgotPassword extends ConsumerStatefulWidget {
   const ForgotPassword({super.key});
 
   @override
-  State<ForgotPassword> createState() => _ForgotPassword();
+  ConsumerState<ForgotPassword> createState() => _ForgotPassword();
 }
 
 
-class _ForgotPassword extends State<ForgotPassword> {
+class _ForgotPassword extends ConsumerState<ForgotPassword> {
   final emailController = TextEditingController(); // user entered email
+  final passwordController = "true";
 
   // Sign up function which takes user input of email and password (for now). 
   // If the password does not match the confrimation password, the error is displayed and 
@@ -27,17 +30,60 @@ class _ForgotPassword extends State<ForgotPassword> {
     super.dispose();
   }
 
-  Future passwordReset() async {
-    try {
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: emailController.text.trim());
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("A reset email has been sent to ${emailController.text.trim()}")));
-    } on FirebaseAuthException catch (e) {
-      print(e);
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(e.toString())));
+Future<bool> emailExists(String email) async {
+  try {
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: email,
+      password: 'dummy_password',
+    );
+    return true;
+  } on FirebaseAuthException catch (e) {
+    if (e.code == 'invalid-credential') {
+      return false;
+    } else if (e.code == 'wrong-password') {
+      return true;
+    } else {
+      throw Exception("Unexpected Firebase error: ${e.code}");
     }
   }
+}
+
+Future<void> passwordReset() async {
+  final email = emailController.text.trim();
+
+  try {
+    final exists = await emailExists(email);
+
+    if (!exists) {
+      showDialog(
+        context: context,
+        builder: (context) => const AlertDialog(
+          content: Text("Email not associated with any user."),
+        ),
+      );
+      return;
+    }
+
+    await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+
+    showDialog(
+      context: context,
+      builder: (context) => const AlertDialog(
+        content: Text('Password reset link sent!'),
+      ),
+    );
+  } catch (e) {
+    // Catch anything from emailExists or sendPasswordResetEmail
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: Text("Something went wrong:\n${e.toString()}"),
+      ),
+    );
+  }
+}
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -94,10 +140,3 @@ class _ForgotPassword extends State<ForgotPassword> {
     );
   }
 }
-
-
-
-
-
-
-        

@@ -71,9 +71,8 @@ class _Contacts extends ConsumerState<Contacts> {
                         return Padding(
                           padding: const EdgeInsets.all(8),
                           child: SizedBox(
-                            height: 100,
+                            height: 75,
                             child: ElevatedButton(
-                              child: Text("${contact['first name']} ${contact['last name'] ?? ''}"),
                               onPressed: () {
                                 Navigator.push(
                                   context,
@@ -85,8 +84,13 @@ class _Contacts extends ConsumerState<Contacts> {
                                   ),
                                 );
                               },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                elevation: 0.0,
                             ),
+                            child: Text("${contact['first name']} ${contact['last name'] ?? ''}"),
                           ),
+                          )
                         );
                       },
                     );
@@ -146,7 +150,10 @@ class _Contacts extends ConsumerState<Contacts> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => Notifications(),
+                              builder: (context) => Notifications(
+                                receiverUserName: 'first name',
+                                receiverUserID: 'uid',
+                              ),
                             ),
                           );
                         }, 

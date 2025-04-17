@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class GetContacts extends StatelessWidget {
   final String documentId;
-  GetContacts({required this.documentId});
+  const GetContacts({super.key, required this.documentId});
 
   @override
   Widget build(BuildContext context) {

@@ -36,6 +36,12 @@ class ChatService extends ChangeNotifier{
         .collection('message')
         .add(newMessage.toMap());
 
+    // add message to notifications
+    await _fireStore
+      .collection('chat_rooms')
+      .doc(receiverId)
+      .collection('notification')
+      .add(newMessage.toMap());
   }
 
   // GET
@@ -48,6 +54,19 @@ class ChatService extends ChangeNotifier{
         .collection('chat_rooms')
         .doc(chatRoomId)
         .collection('message')
+        .orderBy('timestamp', descending: false)
+        .snapshots();
+  }
+
+  // NOTIFICATION
+  Stream<QuerySnapshot> getNotification(String userId, String otherUserId) {
+    List<String> ids = [userId, otherUserId];
+    ids.sort();
+
+    return _fireStore
+        .collection('chat_rooms')
+        .doc(otherUserId)
+        .collection('notification')
         .orderBy('timestamp', descending: false)
         .snapshots();
   }

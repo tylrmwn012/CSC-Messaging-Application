@@ -62,6 +62,7 @@ class _AddContact extends ConsumerState<AddContact> {
   Widget build(BuildContext context) {
     return Scaffold(  
       appBar: AppBar(
+        title: Text('Add Contacts', style: TextStyle(color: Colors.white, fontSize: 25)),
         leading: const BackButton(
           color: Colors.white,
         ),  
@@ -93,7 +94,7 @@ class _AddContact extends ConsumerState<AddContact> {
                     return Padding(
                       padding: const EdgeInsets.all(8),
                       child: SizedBox(
-                        height: 100,
+                        height: 75,
                         child: ElevatedButton(
                           child: GetUserName(documentId: filteredUsers[index]),
                           onPressed: () {
