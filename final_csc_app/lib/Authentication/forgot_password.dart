@@ -30,39 +30,10 @@ class _ForgotPassword extends ConsumerState<ForgotPassword> {
     super.dispose();
   }
 
-Future<bool> emailExists(String email) async {
-  try {
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
-      email: email,
-      password: 'dummy_password',
-    );
-    return true;
-  } on FirebaseAuthException catch (e) {
-    if (e.code == 'invalid-credential') {
-      return false;
-    } else if (e.code == 'wrong-password') {
-      return true;
-    } else {
-      throw Exception("Unexpected Firebase error: ${e.code}");
-    }
-  }
-}
-
 Future<void> passwordReset() async {
   final email = emailController.text.trim();
 
   try {
-    final exists = await emailExists(email);
-
-    if (!exists) {
-      showDialog(
-        context: context,
-        builder: (context) => const AlertDialog(
-          content: Text("Email not associated with any user."),
-        ),
-      );
-      return;
-    }
 
     await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
 
@@ -72,7 +43,7 @@ Future<void> passwordReset() async {
         content: Text('Password reset link sent!'),
       ),
     );
-  } catch (e) {
+  } on FirebaseAuthException catch (e) {
     // Catch anything from emailExists or sendPasswordResetEmail
     showDialog(
       context: context,

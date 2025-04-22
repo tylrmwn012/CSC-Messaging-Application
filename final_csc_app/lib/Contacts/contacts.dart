@@ -151,8 +151,7 @@ class _Contacts extends ConsumerState<Contacts> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => Notifications(
-                                receiverUserName: 'first name',
-                                receiverUserID: 'uid',
+                                
                               ),
                             ),
                           );

@@ -3,19 +3,19 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class ChatService extends ChangeNotifier{
-
+class ChatService extends ChangeNotifier {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
 
   // SEND 
   Future<void> sendMessage(String receiverId, String message) async {
-    // get current user info
-    final String currentUserId = _firebaseAuth.currentUser!.uid;
-    final String currentUserEmail = _firebaseAuth.currentUser!.email.toString();
+    final user = _firebaseAuth.currentUser;
+    if (user == null) return;
+
+    final String currentUserId = user.uid;
+    final String currentUserEmail = user.email.toString();
     final Timestamp timestamp = Timestamp.now();
 
-    // create a new message
     Message newMessage = Message(
       senderId: currentUserId,
       senderEmail: currentUserEmail,
@@ -24,27 +24,33 @@ class ChatService extends ChangeNotifier{
       message: message,
     );
 
-    // construct chat room id from current user id and receiver id
     List<String> ids = [currentUserId, receiverId];
     ids.sort();
     String chatRoomId = ids.join("_");
 
-    // add new message to database
-    await _fireStore
-        .collection('chat_rooms')
-        .doc(chatRoomId)
-        .collection('message')
-        .add(newMessage.toMap());
+    try {
+      // Save to chat room
+      await _fireStore
+          .collection('chat_rooms')
+          .doc(chatRoomId)
+          .collection('messages')
+          .add(newMessage.toMap());
 
-    // add message to notifications
-    await _fireStore
-      .collection('chat_rooms')
-      .doc(receiverId)
-      .collection('notification')
-      .add(newMessage.toMap());
+      // Save notification to receiver's personal collection
+      await _fireStore
+          .collection('notifications')
+          .doc(receiverId)
+          .collection('notifications')
+          .add({
+            ...newMessage.toMap(),
+            'isRead': false,
+          });
+    } catch (e) {
+      debugPrint('Error sending message: $e');
+    }
   }
 
-  // GET
+  // GET messages between two users
   Stream<QuerySnapshot> getMessages(String userId, String otherUserId) {
     List<String> ids = [userId, otherUserId];
     ids.sort();
@@ -53,21 +59,28 @@ class ChatService extends ChangeNotifier{
     return _fireStore
         .collection('chat_rooms')
         .doc(chatRoomId)
-        .collection('message')
+        .collection('messages')
         .orderBy('timestamp', descending: false)
         .snapshots();
   }
 
-  // NOTIFICATION
-  Stream<QuerySnapshot> getNotification(String userId, String otherUserId) {
-    List<String> ids = [userId, otherUserId];
-    ids.sort();
-
+  // GET all notifications for a user
+  Stream<QuerySnapshot> getNotifications(String userId) {
     return _fireStore
-        .collection('chat_rooms')
-        .doc(otherUserId)
-        .collection('notification')
-        .orderBy('timestamp', descending: false)
+        .collection('notifications')
+        .doc(userId)
+        .collection('notifications')
+        .orderBy('timestamp', descending: true)
         .snapshots();
+  }
+
+  // MARK a notification as read
+  Future<void> markNotificationAsRead(String userId, String notificationId) async {
+    await _fireStore
+        .collection('notifications')
+        .doc(userId)
+        .collection('notifications')
+        .doc(notificationId)
+        .update({'isRead': true});
   }
 }
