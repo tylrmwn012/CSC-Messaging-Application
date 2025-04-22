@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../Firebase Auth/auth_provider.dart';
 
 // This screen is where the user either logs in with an email and password. 
 // Or they can move on to the register screen and register with an email and password,
