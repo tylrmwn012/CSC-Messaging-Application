@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:final_csc_app/Firebase%20Chat/chat_service.dart';
+import 'package:final_csc_app/Firebase Chat/chat_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'chat_screen.dart';
 
 class Notifications extends StatefulWidget {
   const Notifications({super.key});
@@ -17,11 +18,14 @@ class _NotificationsState extends State<Notifications> {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
+  List<Map<String, dynamic>> contacts = [];
+
   @override
   void initState() {
     super.initState();
     _initializeLocalNotifications();
     _listenForNewNotifications();
+    _getContacts();
   }
 
   Future<void> _initializeLocalNotifications() async {
@@ -68,6 +72,20 @@ class _NotificationsState extends State<Notifications> {
     });
   }
 
+  Future<void> _getContacts() async {
+    contacts.clear();
+    QuerySnapshot snapshot =
+        await FirebaseFirestore.instance.collection('users').get();
+
+    for (var doc in snapshot.docs) {
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+      data['uid'] = doc.id;
+      contacts.add(data);
+    }
+
+    setState(() {}); // Refresh UI if needed
+  }
+
   @override
   Widget build(BuildContext context) {
     final userId = _firebaseAuth.currentUser?.uid;
@@ -77,7 +95,8 @@ class _NotificationsState extends State<Notifications> {
         backgroundColor: Colors.transparent,
         elevation: 0.0,
         leading: const BackButton(color: Colors.white),
-        title: const Text('Notifications', style: TextStyle(color: Colors.white)),
+        title:
+            const Text('Notifications', style: TextStyle(color: Colors.white)),
       ),
       extendBodyBehindAppBar: true,
       body: Container(
@@ -138,6 +157,25 @@ class _NotificationsState extends State<Notifications> {
       onTap: () {
         final userId = _firebaseAuth.currentUser!.uid;
         _chatService.markNotificationAsRead(userId, document.id);
+
+        final matchingContact = contacts.firstWhere(
+          (contact) => contact['uid'] == data['senderId'],
+          orElse: () => {},
+        );
+
+        if (matchingContact.isNotEmpty) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChatScreen(
+                receiverUserName: matchingContact['first name'],
+                receiverUserID: matchingContact['uid'],
+              ),
+            ),
+          );
+        } else {
+          print('Contact not found for UID: ${data['senderId']}');
+        }
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 20),
@@ -148,16 +186,18 @@ class _NotificationsState extends State<Notifications> {
             padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
             margin: const EdgeInsets.symmetric(vertical: 4.0),
             decoration: BoxDecoration(
-              color: isRead ? const Color.fromARGB(90, 255, 139, 128) : const Color.fromARGB(105, 124, 151, 250),
+              color: isRead
+                  ?  const Color.fromARGB(123, 255, 255, 255)
+                  : Colors.white,
               borderRadius: BorderRadius.circular(8.0),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(data['senderEmail'] ?? '',
-                    style: const TextStyle(color: Colors.white)),
+                    style: const TextStyle(color: Colors.black)),
                 Text('Sent a Message',
-                    style: const TextStyle(color: Colors.white)),
+                    style: const TextStyle(color: Colors.black)),
               ],
             ),
           ),

@@ -19,7 +19,7 @@ class _ChatScreen extends State<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final ChatService _chatService = ChatService();
-    final FocusNode _focusNode = FocusNode();
+  final FocusNode _focusNode = FocusNode();
 
   void sendMessage() async {
     if (_messageController.text.isNotEmpty) {
@@ -56,7 +56,6 @@ class _ChatScreen extends State<ChatScreen> {
           Expanded(
             child: _buildMessageList(),
           ),
-
           _buildMessageInput(),
           const SizedBox(height: 24),
         ],
